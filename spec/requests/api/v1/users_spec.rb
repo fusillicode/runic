@@ -36,7 +36,7 @@ describe 'Api::V1::Users' do
 
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action() get api_user_path existing_user end
+        def action() get api_user_path(existing_user) end
       end
     end
 
@@ -179,7 +179,7 @@ describe 'Api::V1::Users' do
   describe 'DELETE /api/users/:id' do
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action() get token_api_users_path end
+        def action() delete api_user_path(admin) end
       end
     end
 
