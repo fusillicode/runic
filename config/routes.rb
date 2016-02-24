@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       resources :users, only: [:index, :show, :update, :destroy] do
         get :token, on: :collection
       end
+      match '*unmatched_route', controller: 'base', to: '#routing_error', via: :all
     end
   end
 end
