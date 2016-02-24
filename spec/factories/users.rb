@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :user do
-    username { Faker::Internet.user_name }
-    password { Faker::Internet.password }
+    sequence(:username) { |n| "#{Faker::Internet.user_name}-#{n}" }
+    sequence(:password) { |n| "#{Faker::Internet.password}-#{n}" }
     role :user
 
     trait :admin do

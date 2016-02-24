@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :rune do
-    name { Faker::Superhero.name }
+    sequence(:name) { |n| "#{Faker::Superhero.name}-n" }
     description { Faker::Lorem.sentence }
     user nil
   end
