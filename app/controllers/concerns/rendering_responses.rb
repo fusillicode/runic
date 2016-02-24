@@ -10,6 +10,10 @@ module Concerns
       render :show, status: :ok, location: location
     end
 
+    def render_created(location)
+      render :show, status: :created, location: location
+    end
+
     def render_errors(resource)
       render json: resource.errors, status: :unprocessable_entity
     end

@@ -8,11 +8,8 @@ module Api
       def create
         @rune = current_user.runes.new rune_params
         authorize @rune
-        if @rune.save
-          render json: @rune, status: :created, location: api_rune_url(@rune)
-        else
-          render_errors @rune
-        end
+        return render_created(api_rune_url(@rune)) if @rune.save
+        render_errors @rune
       end
 
       def show

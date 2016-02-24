@@ -61,6 +61,50 @@ describe 'Api::V1::Runes' do
     end
   end
 
+  describe 'POST /api/runes' do
+    context 'when not authenticated' do
+      it_behaves_like 'render_unauthorized' do
+        def action() post api_runes_path, { rune: { name: 'new-name' } } end
+      end
+    end
+
+    context 'when authenticated' do
+      context 'when guest' do
+        let!(:guest) { create :user, :guest }
+
+        it_behaves_like 'render_forbidden' do
+          def action()
+            post api_runes_path,
+                { rune: { name: 'new-name' } },
+                authorization: token_header(guest)
+          end
+        end
+      end
+
+      context 'when supplying valid data' do
+        before do
+          post api_runes_path,
+                { rune: { name: 'new-name' } },
+                authorization: token_header(admin)
+        end
+
+        it { expect(response).to be_created }
+        it { expect(response).to match_response_schema 'rune' }
+        it { expect(json_response[:name]).to eq 'new-name' }
+      end
+
+      context 'when supplying an invalid name' do
+        before do
+          post api_runes_path,
+                { rune: { name: '' } },
+                authorization: token_header(admin)
+        end
+
+        it { expect(response).to be_unprocessable }
+      end
+    end
+  end
+
   describe 'PATCH/PUT /api/runes/:id' do
     let!(:existing_rune) { create :rune }
 
@@ -98,7 +142,7 @@ describe 'Api::V1::Runes' do
           it { expect(json_response[:name]).to eq existing_rune.reload.name }
         end
 
-        context 'when supplying an invalid runename' do
+        context 'when supplying an invalid name' do
           before do
             patch api_rune_path(existing_rune),
                   { rune: { name: '' } },
