@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
 
   enum role: %i(guest user admin)
 
-  def owns? resource
+  def owns?(resource)
     resource.respond_to?(:owned_by?) && resource.owned_by?(self)
   end
 end

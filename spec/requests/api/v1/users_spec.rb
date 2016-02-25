@@ -49,8 +49,8 @@ describe 'Api::V1::Users' do
         it_behaves_like 'render not found' do
           def action
             get api_user_path(id: User.maximum(:id).next),
-              nil,
-              authorization: token_header(admin)
+                nil,
+                authorization: token_header(admin)
           end
         end
       end
@@ -161,8 +161,8 @@ describe 'Api::V1::Users' do
           it_behaves_like 'render unprocessable' do
             def action
               patch api_user_path(admin),
-                  { user: { username: '' } },
-                  authorization: token_header(admin)
+                    { user: { username: '' } },
+                    authorization: token_header(admin)
             end
           end
         end
@@ -171,8 +171,8 @@ describe 'Api::V1::Users' do
           it_behaves_like 'render unprocessable' do
             def action
               patch api_user_path(admin),
-                  { user: { password: nil } },
-                  authorization: token_header(admin)
+                    { user: { password: nil } },
+                    authorization: token_header(admin)
             end
           end
         end
@@ -194,8 +194,8 @@ describe 'Api::V1::Users' do
         it_behaves_like 'render not found' do
           def action
             delete api_user_path(id: User.maximum(:id).next),
-                 nil,
-                 authorization: token_header(admin)
+                   nil,
+                   authorization: token_header(admin)
           end
         end
       end

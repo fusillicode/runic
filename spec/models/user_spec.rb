@@ -34,7 +34,7 @@ describe User do
   end
 
   describe '#owns?' do
-    let(:resource) { double() }
+    let(:resource) { double }
 
     context 'when the user owns the resource' do
       before { allow(resource).to receive(:owned_by?).with(subject) { true } }
