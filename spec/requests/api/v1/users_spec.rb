@@ -128,7 +128,7 @@ describe 'Api::V1::Users' do
       end
 
       context 'when the user exists' do
-        context 'when authenticated as non admin' do
+        context 'when non admin' do
           let!(:non_admin_user) { create :user }
 
           context 'when the user is not the authenticated one' do
@@ -200,7 +200,7 @@ describe 'Api::V1::Users' do
       end
 
       context 'when the user exists' do
-        context 'when authenticated as non admin' do
+        context 'when non admin' do
           let!(:non_admin_user) { create :user }
 
           context 'when the user is not the authenticated one' do

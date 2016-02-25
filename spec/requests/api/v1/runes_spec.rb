@@ -134,38 +134,83 @@ describe 'Api::V1::Runes' do
       end
 
       context 'when the rune exists' do
-        context 'when authenticated as non admin and the rune belongs to another user' do
-          let!(:user) { create :user }
-          let!(:another_user_rune) { create :rune, user: create(:user) }
+        let(:user) { create :user }
 
-          it_behaves_like 'render forbidden' do
-            def action
-              patch api_rune_path(another_user_rune),
-                    nil,
+        context 'when the rune belongs to the user' do
+          let(:belonging_rune) { create :rune, user: user }
+
+          context 'when supplying valid data' do
+            before do
+              patch api_rune_path(belonging_rune),
+                    { rune: { name: 'new-name' } },
                     authorization: token_header(user)
             end
-          end
-        end
 
-        context 'when supplying valid data' do
-          before do
-            patch api_rune_path(existing_rune),
-                  { rune: { name: 'new-name' } },
-                  authorization: token_header(admin)
+            it { expect(response).to be_ok }
+            it { expect(response).to match_response_schema 'rune' }
+            it { expect(json_response[:name]).to eq belonging_rune.reload.name }
           end
 
-          it { expect(response).to be_ok }
-          it { expect(response).to match_response_schema 'rune' }
-          it { expect(json_response[:name]).to eq existing_rune.reload.name }
-        end
-
-        context 'when supplying an invalid name' do
-          it_behaves_like 'render unprocessable' do
-            def action
-              patch api_rune_path(existing_rune),
-                    { rune: { name: '' } },
-                    authorization: token_header(admin)
+          context 'when supplying an invalid name' do
+            it_behaves_like 'render unprocessable' do
+              def action
+                patch api_rune_path(belonging_rune),
+                      { rune: { name: '' } },
+                      authorization: token_header(user)
+              end
             end
+          end
+        end
+
+        context 'when non admin' do
+          context 'when the rune belongs to another user' do
+            let(:another_user_rune) { create :rune, user: create(:user) }
+
+            it_behaves_like 'render forbidden' do
+              def action
+                patch api_rune_path(another_user_rune),
+                       { rune: { name: 'new-name' } },
+                       authorization: token_header(user)
+              end
+            end
+          end
+
+          context 'when the rune does not belong to a user' do
+            it_behaves_like 'render forbidden' do
+              def action
+                delete api_rune_path(existing_rune),
+                       { rune: { name: 'new-name' } },
+                       authorization: token_header(user)
+              end
+            end
+          end
+        end
+
+        context 'when admin' do
+          context 'when the rune belongs to another user' do
+            let(:another_user_rune) { create :rune, user: create(:user) }
+
+            before do
+              patch api_rune_path(another_user_rune),
+                       { rune: { name: 'new-name' } },
+                     authorization: token_header(admin)
+            end
+
+            it { expect(response).to be_ok }
+            it { expect(response).to match_response_schema 'rune' }
+            it { expect(json_response[:name]).to eq another_user_rune.reload.name }
+          end
+
+          context 'when the rune does not belong to a user' do
+            before do
+              patch api_rune_path(existing_rune),
+                       { rune: { name: 'new-name' } },
+                     authorization: token_header(admin)
+            end
+
+            it { expect(response).to be_ok }
+            it { expect(response).to match_response_schema 'rune' }
+            it { expect(json_response[:name]).to eq existing_rune.reload.name }
           end
         end
       end
@@ -195,29 +240,72 @@ describe 'Api::V1::Runes' do
       end
 
       context 'when the rune exists' do
-        context 'when authenticated as non admin and the rune belongs to another user' do
-          let!(:user) { create :user }
-          let!(:another_user_rune) { create :rune, user: create(:user) }
-
-          it_behaves_like 'render forbidden' do
-            def action
-              delete api_rune_path(another_user_rune),
-                     nil,
-                     authorization: token_header(user)
-            end
-          end
-        end
+        let(:user) { create :user }
 
         context 'when the rune belongs to the user' do
+          let(:belonging_rune) { create :rune, user: user }
+
           before do
-            delete api_rune_path(existing_rune),
+            delete api_rune_path(belonging_rune),
                    nil,
-                   authorization: token_header(admin)
+                   authorization: token_header(user)
           end
 
           it { expect(response.status).to eq 204 }
           it { expect(response.message).to eq 'No Content' }
-          it { expect(Rune.find_by id: existing_rune.id).to be_nil }
+          it { expect(Rune.find_by id: belonging_rune.id).to be_nil }
+        end
+
+        context 'when non admin' do
+          context 'when the rune belongs to another user' do
+            let(:another_user_rune) { create :rune, user: create(:user) }
+
+            it_behaves_like 'render forbidden' do
+              def action
+                delete api_rune_path(another_user_rune),
+                       nil,
+                       authorization: token_header(user)
+              end
+            end
+          end
+
+          context 'when the rune does not belong to a user' do
+            it_behaves_like 'render forbidden' do
+              def action
+                delete api_rune_path(existing_rune),
+                       nil,
+                       authorization: token_header(user)
+              end
+            end
+          end
+        end
+
+        context 'when admin' do
+          context 'when the rune belongs to another user' do
+            let(:another_user_rune) { create :rune, user: create(:user) }
+
+            before do
+              delete api_rune_path(another_user_rune),
+                     nil,
+                     authorization: token_header(admin)
+            end
+
+            it { expect(response.status).to eq 204 }
+            it { expect(response.message).to eq 'No Content' }
+            it { expect(Rune.find_by id: another_user_rune.id).to be_nil }
+          end
+
+          context 'when the rune does not belong to a user' do
+            before do
+              delete api_rune_path(existing_rune),
+                     nil,
+                     authorization: token_header(admin)
+            end
+
+            it { expect(response.status).to eq 204 }
+            it { expect(response.message).to eq 'No Content' }
+            it { expect(Rune.find_by id: existing_rune.id).to be_nil }
+          end
         end
       end
     end
