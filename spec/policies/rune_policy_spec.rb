@@ -15,6 +15,10 @@ describe RunePolicy do
       it { expect(subject).to permit(user, resource) }
     end
 
+    permissions :create? do
+      it { expect(subject).not_to permit(user, resource) }
+    end
+
     permissions :update? do
       it { expect(subject).not_to permit(user, resource) }
     end
@@ -35,6 +39,10 @@ describe RunePolicy do
       it { expect(subject).to permit(user, resource) }
     end
 
+    permissions :create? do
+      it { expect(subject).to permit(user, resource) }
+    end
+
     permissions :update? do
       it { expect(subject).to permit(user, resource) }
     end
@@ -52,6 +60,10 @@ describe RunePolicy do
     end
 
     permissions :show? do
+      it { expect(subject).to permit(user, resource) }
+    end
+
+    permissions :create? do
       it { expect(subject).to permit(user, resource) }
     end
 
