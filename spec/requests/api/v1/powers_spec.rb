@@ -6,8 +6,7 @@ describe 'Api::V1::Powers' do
   describe 'GET /api/runes/:rune_id/powers' do
     let(:rune) { create :rune }
     let!(:rune_powers) { create_list :power, 2, rune: rune }
-    let(:another_rune) { create :rune }
-    let!(:another_rune_powers) { create_list :power, 2, rune: another_rune }
+    let!(:powers_of_another_rune) { create_list :power, 2 }
 
     context 'when not authenticated' do
       it_behaves_like 'render unauthorized' do
@@ -27,8 +26,11 @@ describe 'Api::V1::Powers' do
         expect(json_response.map { |p| p[:id] }).to eq rune_powers.map(&:id)
       end
 
-      it 'does not show powers of other runes' do
-        expect(json_response.map { |p| p[:id] }).not_to eq another_rune_powers.map(&:id)
+      it 'does not show other runes powers' do
+        rune_powers_ids = json_response.map { |p| p[:id] }
+        powers_of_another_rune.each do |power_of_another_rune|
+          expect(rune_powers_ids).not_to include power_of_another_rune.id
+        end
       end
     end
   end
@@ -127,7 +129,7 @@ describe 'Api::V1::Powers' do
       it_behaves_like 'render unauthorized' do
         def action
           patch api_power_path(existing_power),
-                rune: { name: 'new-name' }
+                power: { name: 'new-name' }
         end
       end
     end
@@ -137,47 +139,94 @@ describe 'Api::V1::Powers' do
         it_behaves_like 'render not found' do
           def action
             patch api_power_path(id: Power.maximum(:id).next),
-                nil,
+                { power: { name: 'new-name' } },
                 authorization: token_header(admin)
           end
         end
       end
 
       context 'when the power exists' do
-        context 'when non admin and the power is from another user rune' do
-          let(:non_admin) { create :user }
-          let(:another_user) { create :user }
-          let(:another_user_rune) { create :rune, user: another_user }
-          let!(:another_user_rune_power) { create :power, rune: another_user_rune }
+        let(:user) { create :user }
 
-          it_behaves_like 'render forbidden' do
-            def action
-              patch api_power_path(another_user_rune_power),
-                    nil,
-                    authorization: token_header(non_admin)
+        context 'when the power belongs to a rune owned by the user' do
+          let(:power_of_owned_rune) { create :power, rune: create(:rune, user: user) }
+
+          context 'when supplying valid data' do
+            before do
+              patch api_power_path(power_of_owned_rune),
+                    { power: { name: 'new-name' } },
+                    authorization: token_header(user)
+            end
+
+            it { expect(response).to be_ok }
+            it { expect(response).to match_response_schema 'rune' }
+            it { expect(json_response[:name]).to eq power_of_owned_rune.reload.name }
+          end
+
+          context 'when supplying an invalid name' do
+            it_behaves_like 'render unprocessable' do
+              def action
+                patch api_power_path(power_of_owned_rune),
+                    { power: { name: '' } },
+                    authorization: token_header(user)
+              end
             end
           end
         end
 
-        context 'when supplying valid data' do
-          before do
-            patch api_power_path(existing_power),
-                  { power: { name: 'new-name' } },
-                  authorization: token_header(admin)
+        context 'when non admin' do
+          context 'when the power belongs to a rune owned by another user' do
+            let(:power_of_another_user_rune) do
+              create :power, rune: create(:rune, user: create(:user))
+            end
+
+            it_behaves_like 'render forbidden' do
+              def action
+                patch api_power_path(power_of_another_user_rune),
+                      nil,
+                      authorization: token_header(user)
+              end
+            end
           end
 
-          it { expect(response).to be_ok }
-          it { expect(response).to match_response_schema 'rune' }
-          it { expect(json_response[:name]).to eq existing_power.reload.name }
+          context 'when the power rune does not belong to a user' do
+            it_behaves_like 'render forbidden' do
+              def action
+                patch api_power_path(existing_power),
+                       { power: { name: 'new-name' } },
+                       authorization: token_header(user)
+              end
+            end
+          end
         end
 
-        context 'when supplying an invalid name' do
-          it_behaves_like 'render unprocessable' do
-            def action
+        context 'when admin' do
+          context 'when the power belongs to a rune owned by another user' do
+            let(:power_of_another_user_rune) do
+              create :power, rune: create(:rune, user: create(:user))
+            end
+
+            before do
+              patch api_power_path(power_of_another_user_rune),
+                       { power: { name: 'new-name' } },
+                     authorization: token_header(admin)
+            end
+
+            it { expect(response).to be_ok }
+            it { expect(response).to match_response_schema 'power' }
+            it { expect(json_response[:name]).to eq power_of_another_user_rune.reload.name }
+          end
+
+          context 'when the power rune does not belong to a user' do
+            before do
               patch api_power_path(existing_power),
-                  { power: { name: '' } },
-                  authorization: token_header(admin)
+                       { power: { name: 'new-name' } },
+                     authorization: token_header(admin)
             end
+
+            it { expect(response).to be_ok }
+            it { expect(response).to match_response_schema 'power' }
+            it { expect(json_response[:name]).to eq existing_power.reload.name }
           end
         end
       end
@@ -207,31 +256,76 @@ describe 'Api::V1::Powers' do
       end
 
       context 'when the power exists' do
-        context 'when non admin and the power is from another user rune' do
-          let(:non_admin) { create :user }
-          let(:another_user) { create :user }
-          let(:another_user_rune) { create :rune, user: another_user }
-          let!(:another_user_rune_power) { create :power, rune: another_user_rune }
+        let(:user) { create :user }
 
-          it_behaves_like 'render forbidden' do
-            def action
-              delete api_power_path(another_user_rune_power),
-                     nil,
-                     authorization: token_header(non_admin)
-            end
-          end
-        end
+        context 'when the power belongs to a rune owned by the user' do
+          let(:power_of_owned_rune) { create :power, rune: create(:rune, user: user) }
 
-        context 'when the power is from the user rune' do
           before do
-            delete api_power_path(existing_power),
-                   nil,
-                   authorization: token_header(admin)
+            delete api_power_path(power_of_owned_rune),
+                  nil,
+                  authorization: token_header(user)
           end
 
           it { expect(response.status).to eq 204 }
           it { expect(response.message).to eq 'No Content' }
-          it { expect(Power.find_by id: existing_power.id).to be_nil }
+          it { expect(Power.find_by id: power_of_owned_rune.id).to be_nil }
+        end
+
+        context 'when non admin' do
+          context 'when the power belongs to a rune owned by another user' do
+            let(:power_of_another_user_rune) do
+              create :power, rune: create(:rune, user: create(:user))
+            end
+
+            it_behaves_like 'render forbidden' do
+              def action
+                delete api_power_path(power_of_another_user_rune),
+                      nil,
+                      authorization: token_header(user)
+              end
+            end
+          end
+
+          context 'when the power rune does not belong to a user' do
+            it_behaves_like 'render forbidden' do
+              def action
+                delete api_power_path(existing_power),
+                       nil,
+                       authorization: token_header(user)
+              end
+            end
+          end
+        end
+
+        context 'when admin' do
+          context 'when the power belongs to a rune owned by another user' do
+            let(:power_of_another_user_rune) do
+              create :power, rune: create(:rune, user: create(:user))
+            end
+
+            before do
+              delete api_power_path(power_of_another_user_rune),
+                       nil,
+                     authorization: token_header(admin)
+            end
+
+            it { expect(response.status).to eq 204 }
+            it { expect(response.message).to eq 'No Content' }
+            it { expect(Power.find_by id: power_of_another_user_rune.id).to be_nil }
+          end
+
+          context 'when the power rune does not belong to a user' do
+            before do
+              delete api_power_path(existing_power),
+                      nil,
+                     authorization: token_header(admin)
+            end
+
+            it { expect(response.status).to eq 204 }
+            it { expect(response.message).to eq 'No Content' }
+            it { expect(Power.find_by id: existing_power.id).to be_nil }
+          end
         end
       end
     end
