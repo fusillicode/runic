@@ -124,6 +124,22 @@ describe 'Api::V1::Users' do
       end
 
       context 'when the user exists' do
+        context 'when authenticated as admin' do
+          let!(:not_admin_user) { create :user }
+
+          context 'when the user is not the authenticated one' do
+            let!(:another_user) { create :user }
+
+            it_behaves_like 'render_forbidden' do
+              def action
+                patch api_user_path(another_user),
+                     nil,
+                     authorization: token_header(not_admin_user)
+              end
+            end
+          end
+        end
+
         context 'when supplying valid data' do
           before do
             patch api_user_path(admin),
@@ -156,23 +172,6 @@ describe 'Api::V1::Users' do
           it { expect(response).to be_unprocessable }
         end
       end
-
-      context 'when non admin' do
-        let!(:not_admin_user) { create :user }
-
-
-        context 'when updating another user' do
-          let!(:another_user) { create :user }
-          before do
-            delete api_user_path(another_user),
-                   nil,
-                   authorization: token_header(not_admin_user)
-          end
-
-          it { expect(response).to be_forbidden }
-          it { expect(response).to match_response_schema 'forbidden' }
-        end
-      end
     end
   end
 
@@ -196,30 +195,32 @@ describe 'Api::V1::Users' do
       end
 
       context 'when the user exists' do
-        before do
-          delete api_user_path(admin),
-                 nil,
-                 authorization: token_header(admin)
+        context 'when authenticated as non admin' do
+          let!(:not_admin_user) { create :user }
+
+          context 'when the user is not the authenticated one' do
+            let!(:another_user) { create :user }
+
+            it_behaves_like 'render_forbidden' do
+              def action
+                delete api_user_path(another_user),
+                     nil,
+                     authorization: token_header(not_admin_user)
+              end
+            end
+          end
         end
 
-        it { expect(response.status).to eq 204 }
-        it { expect(response.message).to eq 'No Content' }
-        it { expect(User.find_by id: admin.id).to be_nil }
-      end
-
-      context 'when non admin' do
-        let!(:not_admin_user) { create :user }
-
-        context 'when deleting another user' do
-          let!(:another_user) { create :user }
+        context 'when the user is the authenticated one' do
           before do
-            delete api_user_path(another_user),
+            delete api_user_path(admin),
                    nil,
-                   authorization: token_header(not_admin_user)
+                   authorization: token_header(admin)
           end
 
-          it { expect(response).to be_forbidden }
-          it { expect(response).to match_response_schema 'forbidden' }
+          it { expect(response.status).to eq 204 }
+          it { expect(response.message).to eq 'No Content' }
+          it { expect(User.find_by id: admin.id).to be_nil }
         end
       end
     end
