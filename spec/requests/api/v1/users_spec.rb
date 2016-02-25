@@ -5,7 +5,7 @@ describe 'Api::V1::Users' do
 
   describe 'GET /api/users' do
     context 'when not authenticated' do
-      it_behaves_like 'render_unauthorized' do
+      it_behaves_like 'render unauthorized' do
         def action
           get api_users_path
         end
@@ -37,7 +37,7 @@ describe 'Api::V1::Users' do
     let!(:existing_user) { create :user }
 
     context 'when not authenticated' do
-      it_behaves_like 'render_unauthorized' do
+      it_behaves_like 'render unauthorized' do
         def action
           get api_user_path(existing_user)
         end
@@ -46,7 +46,7 @@ describe 'Api::V1::Users' do
 
     context 'when authenticated' do
       context 'when the user does not exist' do
-        it_behaves_like 'render_not_found' do
+        it_behaves_like 'render not found' do
           def action
             get api_user_path(id: User.maximum(:id).next),
               nil,
@@ -74,7 +74,7 @@ describe 'Api::V1::Users' do
 
   describe 'GET /api/token' do
     context 'when not authenticated' do
-      it_behaves_like 'render_unauthorized' do
+      it_behaves_like 'render unauthorized' do
         def action
           get token_api_users_path
         end
@@ -85,7 +85,7 @@ describe 'Api::V1::Users' do
       let!(:admin) { create :user, :admin, password: 'passssssword' }
 
       context 'with incorrect credentials' do
-        it_behaves_like 'render_unauthorized' do
+        it_behaves_like 'render unauthorized' do
           def action
             get token_api_users_path,
                 nil,
@@ -109,7 +109,7 @@ describe 'Api::V1::Users' do
 
   describe 'PATCH/PUT /api/users/:id' do
     context 'when not authenticated' do
-      it_behaves_like 'render_unauthorized' do
+      it_behaves_like 'render unauthorized' do
         def action
           patch api_user_path(admin), user: { username: 'new-name' }
         end
@@ -135,7 +135,7 @@ describe 'Api::V1::Users' do
           context 'when the user is not the authenticated one' do
             let!(:another_user) { create :user }
 
-            it_behaves_like 'render_forbidden' do
+            it_behaves_like 'render forbidden' do
               def action
                 patch api_user_path(another_user),
                       nil,
@@ -158,7 +158,7 @@ describe 'Api::V1::Users' do
         end
 
         context 'when supplying an invalid username' do
-          it_behaves_like 'render_unprocessable' do
+          it_behaves_like 'render unprocessable' do
             def action
               patch api_user_path(admin),
                   { user: { username: '' } },
@@ -168,7 +168,7 @@ describe 'Api::V1::Users' do
         end
 
         context 'when supplying an invalid password' do
-          it_behaves_like 'render_unprocessable' do
+          it_behaves_like 'render unprocessable' do
             def action
               patch api_user_path(admin),
                   { user: { password: nil } },
@@ -182,7 +182,7 @@ describe 'Api::V1::Users' do
 
   describe 'DELETE /api/users/:id' do
     context 'when not authenticated' do
-      it_behaves_like 'render_unauthorized' do
+      it_behaves_like 'render unauthorized' do
         def action
           delete api_user_path(admin)
         end
@@ -191,7 +191,7 @@ describe 'Api::V1::Users' do
 
     context 'when authenticated' do
       context 'when the user does not exist' do
-        it_behaves_like 'render_not_found' do
+        it_behaves_like 'render not found' do
           def action
             delete api_user_path(id: User.maximum(:id).next),
                  nil,
@@ -207,7 +207,7 @@ describe 'Api::V1::Users' do
           context 'when the user is not the authenticated one' do
             let!(:another_user) { create :user }
 
-            it_behaves_like 'render_forbidden' do
+            it_behaves_like 'render forbidden' do
               def action
                 delete api_user_path(another_user),
                        nil,

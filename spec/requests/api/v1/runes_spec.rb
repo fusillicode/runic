@@ -5,7 +5,7 @@ describe 'Api::V1::Runes' do
 
   describe 'GET /api/runes' do
     context 'when not authenticated' do
-      it_behaves_like 'render_unauthorized' do
+      it_behaves_like 'render unauthorized' do
         def action
           get api_runes_path
         end
@@ -29,7 +29,7 @@ describe 'Api::V1::Runes' do
     let!(:existing_rune) { create :rune }
 
     context 'when not authenticated' do
-      it_behaves_like 'render_unauthorized' do
+      it_behaves_like 'render unauthorized' do
         def action
           get api_rune_path(existing_rune)
         end
@@ -67,7 +67,7 @@ describe 'Api::V1::Runes' do
 
   describe 'POST /api/runes' do
     context 'when not authenticated' do
-      it_behaves_like 'render_unauthorized' do
+      it_behaves_like 'render unauthorized' do
         def action
           post api_runes_path, { rune: { name: 'new-name' } }
         end
@@ -78,7 +78,7 @@ describe 'Api::V1::Runes' do
       context 'when guest' do
         let!(:guest) { create :user, :guest }
 
-        it_behaves_like 'render_forbidden' do
+        it_behaves_like 'render forbidden' do
           def action
             post api_runes_path,
                  { rune: { name: 'new-name' } },
@@ -115,7 +115,7 @@ describe 'Api::V1::Runes' do
     let!(:existing_rune) { create :rune }
 
     context 'when not authenticated' do
-      it_behaves_like 'render_unauthorized' do
+      it_behaves_like 'render unauthorized' do
         def action
           patch api_rune_path(existing_rune),
                 { rune: { name: 'new-name' } }
@@ -140,7 +140,7 @@ describe 'Api::V1::Runes' do
           let!(:user) { create :user }
           let!(:another_user_rune) { create :rune, user: create(:user) }
 
-          it_behaves_like 'render_forbidden' do
+          it_behaves_like 'render forbidden' do
             def action
               patch api_rune_path(another_user_rune),
                     nil,
@@ -178,7 +178,7 @@ describe 'Api::V1::Runes' do
     let!(:existing_rune) { create :rune }
 
     context 'when not authenticated' do
-      it_behaves_like 'render_unauthorized' do
+      it_behaves_like 'render unauthorized' do
         def action
           delete api_rune_path(existing_rune)
         end
@@ -202,7 +202,7 @@ describe 'Api::V1::Runes' do
           let!(:user) { create :user }
           let!(:another_user_rune) { create :rune, user: create(:user) }
 
-          it_behaves_like 'render_forbidden' do
+          it_behaves_like 'render forbidden' do
             def action
               delete api_rune_path(another_user_rune),
                      nil,
