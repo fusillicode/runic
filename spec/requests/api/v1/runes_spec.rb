@@ -38,14 +38,13 @@ describe 'Api::V1::Runes' do
 
     context 'when authenticated' do
       context 'when the rune does not exist' do
-        before do
-          get api_rune_path(id: Rune.maximum(:id).next),
+        it_behaves_like 'render not found' do
+          def action
+            get api_rune_path(id: Rune.maximum(:id).next),
               nil,
               authorization: token_header(admin)
+          end
         end
-
-        it { expect(response).to be_not_found }
-        it { expect(response).to match_response_schema 'not_found' }
       end
 
       context 'when the rune exists' do
@@ -100,13 +99,13 @@ describe 'Api::V1::Runes' do
       end
 
       context 'when supplying an invalid name' do
-        before do
-          post api_runes_path,
+        it_behaves_like 'render unprocessable' do
+          def action
+            post api_runes_path,
                { rune: { name: '' } },
                authorization: token_header(admin)
+          end
         end
-
-        it { expect(response).to be_unprocessable }
       end
     end
   end
@@ -125,14 +124,13 @@ describe 'Api::V1::Runes' do
 
     context 'when authenticated' do
       context 'when the rune does not exist' do
-        before do
-          patch api_rune_path(id: Rune.maximum(:id).next),
+        it_behaves_like 'render not found' do
+          def action
+            patch api_rune_path(id: Rune.maximum(:id).next),
                 nil,
                 authorization: token_header(admin)
+          end
         end
-
-        it { expect(response).to be_not_found }
-        it { expect(response).to match_response_schema 'not_found' }
       end
 
       context 'when the rune exists' do
@@ -162,13 +160,13 @@ describe 'Api::V1::Runes' do
         end
 
         context 'when supplying an invalid name' do
-          before do
-            patch api_rune_path(existing_rune),
-                  { rune: { name: '' } },
-                  authorization: token_header(admin)
+          it_behaves_like 'render unprocessable' do
+            def action
+              patch api_rune_path(existing_rune),
+                    { rune: { name: '' } },
+                    authorization: token_header(admin)
+            end
           end
-
-          it { expect(response).to be_unprocessable }
         end
       end
     end
@@ -187,14 +185,13 @@ describe 'Api::V1::Runes' do
 
     context 'when authenticated' do
       context 'when the rune does not exist' do
-        before do
-          delete api_rune_path(id: Rune.maximum(:id).next),
+        it_behaves_like 'render not found' do
+          def action
+            delete api_rune_path(id: Rune.maximum(:id).next),
                  nil,
                  authorization: token_header(admin)
+          end
         end
-
-        it { expect(response).to be_not_found }
-        it { expect(response).to match_response_schema 'not_found' }
       end
 
       context 'when the rune exists' do
