@@ -127,7 +127,7 @@ describe 'Api::V1::Runes' do
         it_behaves_like 'render not found' do
           def action
             patch api_rune_path(id: Rune.maximum(:id).next),
-                nil,
+                { rune: { name: 'new-name' } },
                 authorization: token_header(admin)
           end
         end
