@@ -118,19 +118,18 @@ describe 'Api::V1::Users' do
 
     context 'when authenticated' do
       context 'when the user does not exist' do
-        before do
-          patch api_user_path(id: User.maximum(:id).next),
+        it_behaves_like 'render not found' do
+          def action
+            patch api_user_path(id: User.maximum(:id).next),
                 nil,
                 authorization: token_header(admin)
+          end
         end
-
-        it { expect(response).to be_not_found }
-        it { expect(response).to match_response_schema 'not_found' }
       end
 
       context 'when the user exists' do
-        context 'when authenticated as not admin' do
-          let!(:not_admin_user) { create :user }
+        context 'when authenticated as non admin' do
+          let!(:non_admin_user) { create :user }
 
           context 'when the user is not the authenticated one' do
             let!(:another_user) { create :user }
@@ -139,7 +138,7 @@ describe 'Api::V1::Users' do
               def action
                 patch api_user_path(another_user),
                       nil,
-                      authorization: token_header(not_admin_user)
+                      authorization: token_header(non_admin_user)
               end
             end
           end
@@ -202,7 +201,7 @@ describe 'Api::V1::Users' do
 
       context 'when the user exists' do
         context 'when authenticated as non admin' do
-          let!(:not_admin_user) { create :user }
+          let!(:non_admin_user) { create :user }
 
           context 'when the user is not the authenticated one' do
             let!(:another_user) { create :user }
@@ -211,7 +210,7 @@ describe 'Api::V1::Users' do
               def action
                 delete api_user_path(another_user),
                        nil,
-                       authorization: token_header(not_admin_user)
+                       authorization: token_header(non_admin_user)
               end
             end
           end
