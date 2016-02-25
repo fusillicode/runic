@@ -7,4 +7,8 @@ class User < ActiveRecord::Base
   validates :password, length: { minimum: 8 }, if: :password
 
   enum role: %i(guest user admin)
+
+  def owns? resource
+    resource.respond_to?(:owned_by?) && resource.owned_by?(self)
+  end
 end
