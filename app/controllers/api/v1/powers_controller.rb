@@ -15,14 +15,14 @@ module Api
         @rune = Rune.find params[:rune_id]
         @power = @rune.powers.new power_params
         authorize @power
-        return render_created(api_rune_power_url(@power)) if @power.save
+        return render_created(api_power_url(@power)) if @power.save
         render_errors @power
       end
 
       def update
         @power = Power.find params[:id]
         authorize @power
-        return render_show(api_rune_power_url(@power)) if @power.update power_params
+        return render_show(api_power_url(@power)) if @power.update power_params
         render_errors @power
       end
 
