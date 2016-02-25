@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :power do
-    name { Faker::Superhero.power }
+    sequence(:name) { |n| "#{Faker::Superhero.power}-#{n}" }
     description { Faker::Hipster.sentences.first }
     rune
   end
