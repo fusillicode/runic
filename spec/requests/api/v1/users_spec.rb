@@ -6,7 +6,9 @@ describe 'Api::V1::Users' do
   describe 'GET /api/users' do
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action() get api_users_path end
+        def action
+          get api_users_path
+        end
       end
     end
 
@@ -36,7 +38,9 @@ describe 'Api::V1::Users' do
 
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action() get api_user_path(existing_user) end
+        def action
+          get api_user_path(existing_user)
+        end
       end
     end
 
@@ -72,7 +76,9 @@ describe 'Api::V1::Users' do
   describe 'GET /api/token' do
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action() get token_api_users_path end
+        def action
+          get token_api_users_path
+        end
       end
     end
 
@@ -81,10 +87,10 @@ describe 'Api::V1::Users' do
 
       context 'with incorrect credentials' do
         it_behaves_like 'render_unauthorized' do
-          def action()
+          def action
             get token_api_users_path,
-              nil,
-              'HTTP_AUTHORIZATION' => encode_credentials(admin.username, 'ops')
+                nil,
+                'HTTP_AUTHORIZATION' => encode_credentials(admin.username, 'ops')
           end
         end
       end
@@ -105,8 +111,8 @@ describe 'Api::V1::Users' do
   describe 'PATCH/PUT /api/users/:id' do
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action()
-          patch api_user_path(admin), { user: { username: 'new-name' } }
+        def action
+          patch api_user_path(admin), user: { username: 'new-name' }
         end
       end
     end
@@ -133,8 +139,8 @@ describe 'Api::V1::Users' do
             it_behaves_like 'render_forbidden' do
               def action
                 patch api_user_path(another_user),
-                     nil,
-                     authorization: token_header(not_admin_user)
+                      nil,
+                      authorization: token_header(not_admin_user)
               end
             end
           end
@@ -178,7 +184,9 @@ describe 'Api::V1::Users' do
   describe 'DELETE /api/users/:id' do
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action() delete api_user_path(admin) end
+        def action
+          delete api_user_path(admin)
+        end
       end
     end
 
@@ -204,8 +212,8 @@ describe 'Api::V1::Users' do
             it_behaves_like 'render_forbidden' do
               def action
                 delete api_user_path(another_user),
-                     nil,
-                     authorization: token_header(not_admin_user)
+                       nil,
+                       authorization: token_header(not_admin_user)
               end
             end
           end

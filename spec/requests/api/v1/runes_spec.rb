@@ -6,7 +6,9 @@ describe 'Api::V1::Runes' do
   describe 'GET /api/runes' do
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action() get api_runes_path end
+        def action
+          get api_runes_path
+        end
       end
     end
 
@@ -28,7 +30,9 @@ describe 'Api::V1::Runes' do
 
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action() get api_rune_path(existing_rune) end
+        def action
+          get api_rune_path(existing_rune)
+        end
       end
     end
 
@@ -64,7 +68,9 @@ describe 'Api::V1::Runes' do
   describe 'POST /api/runes' do
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action() post api_runes_path, { rune: { name: 'new-name' } } end
+        def action
+          post api_runes_path, { rune: { name: 'new-name' } }
+        end
       end
     end
 
@@ -73,10 +79,10 @@ describe 'Api::V1::Runes' do
         let!(:guest) { create :user, :guest }
 
         it_behaves_like 'render_forbidden' do
-          def action()
+          def action
             post api_runes_path,
-                { rune: { name: 'new-name' } },
-                authorization: token_header(guest)
+                 { rune: { name: 'new-name' } },
+                 authorization: token_header(guest)
           end
         end
       end
@@ -84,8 +90,8 @@ describe 'Api::V1::Runes' do
       context 'when supplying valid data' do
         before do
           post api_runes_path,
-                { rune: { name: 'new-name' } },
-                authorization: token_header(admin)
+               { rune: { name: 'new-name' } },
+               authorization: token_header(admin)
         end
 
         it { expect(response).to be_created }
@@ -96,8 +102,8 @@ describe 'Api::V1::Runes' do
       context 'when supplying an invalid name' do
         before do
           post api_runes_path,
-                { rune: { name: '' } },
-                authorization: token_header(admin)
+               { rune: { name: '' } },
+               authorization: token_header(admin)
         end
 
         it { expect(response).to be_unprocessable }
@@ -110,7 +116,7 @@ describe 'Api::V1::Runes' do
 
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action()
+        def action
           patch api_rune_path(existing_rune),
                 { rune: { name: 'new-name' } }
         end
@@ -137,8 +143,8 @@ describe 'Api::V1::Runes' do
           it_behaves_like 'render_forbidden' do
             def action
               patch api_rune_path(another_user_rune),
-                   nil,
-                   authorization: token_header(user)
+                    nil,
+                    authorization: token_header(user)
             end
           end
         end
@@ -173,7 +179,7 @@ describe 'Api::V1::Runes' do
 
     context 'when not authenticated' do
       it_behaves_like 'render_unauthorized' do
-        def action()
+        def action
           delete api_rune_path(existing_rune)
         end
       end
@@ -199,8 +205,8 @@ describe 'Api::V1::Runes' do
           it_behaves_like 'render_forbidden' do
             def action
               delete api_rune_path(another_user_rune),
-                   nil,
-                   authorization: token_header(user)
+                     nil,
+                     authorization: token_header(user)
             end
           end
         end

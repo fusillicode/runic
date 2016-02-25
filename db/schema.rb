@@ -11,37 +11,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160224140019) do
-
-  create_table "powers", force: :cascade do |t|
-    t.string   "name"
-    t.string   "description"
-    t.integer  "rune_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+ActiveRecord::Schema.define(version: 20_160_224_140_019) do
+  create_table 'powers', force: :cascade do |t|
+    t.string   'name'
+    t.string   'description'
+    t.integer  'rune_id'
+    t.datetime 'created_at',  null: false
+    t.datetime 'updated_at',  null: false
   end
 
-  add_index "powers", ["rune_id"], name: "index_powers_on_rune_id"
+  add_index 'powers', ['rune_id'], name: 'index_powers_on_rune_id'
 
-  create_table "runes", force: :cascade do |t|
-    t.string   "name",        null: false
-    t.string   "description"
-    t.integer  "user_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+  create_table 'runes', force: :cascade do |t|
+    t.string   'name',        null: false
+    t.string   'description'
+    t.integer  'user_id'
+    t.datetime 'created_at',  null: false
+    t.datetime 'updated_at',  null: false
   end
 
-  add_index "runes", ["user_id"], name: "index_runes_on_user_id"
+  add_index 'runes', ['user_id'], name: 'index_runes_on_user_id'
 
-  create_table "users", force: :cascade do |t|
-    t.string   "username",                    null: false
-    t.string   "password_digest",             null: false
-    t.integer  "role",            default: 0
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-    t.string   "auth_token"
+  create_table 'users', force: :cascade do |t|
+    t.string   'username',                    null: false
+    t.string   'password_digest',             null: false
+    t.integer  'role', default: 0
+    t.datetime 'created_at',                  null: false
+    t.datetime 'updated_at',                  null: false
+    t.string   'auth_token'
   end
 
-  add_index "users", ["username"], name: "index_users_on_username", unique: true
-
+  add_index 'users', ['username'], name: 'index_users_on_username', unique: true
 end
