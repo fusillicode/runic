@@ -46,14 +46,13 @@ describe 'Api::V1::Users' do
 
     context 'when authenticated' do
       context 'when the user does not exist' do
-        before do
-          get api_user_path(id: User.maximum(:id).next),
+        it_behaves_like 'render_not_found' do
+          def action
+            get api_user_path(id: User.maximum(:id).next),
               nil,
               authorization: token_header(admin)
+          end
         end
-
-        it { expect(response).to be_not_found }
-        it { expect(response).to match_response_schema 'not_found' }
       end
 
       context 'when the user exists' do
@@ -130,7 +129,7 @@ describe 'Api::V1::Users' do
       end
 
       context 'when the user exists' do
-        context 'when authenticated as admin' do
+        context 'when authenticated as not admin' do
           let!(:not_admin_user) { create :user }
 
           context 'when the user is not the authenticated one' do
@@ -159,23 +158,23 @@ describe 'Api::V1::Users' do
         end
 
         context 'when supplying an invalid username' do
-          before do
-            patch api_user_path(admin),
+          it_behaves_like 'render_unprocessable' do
+            def action
+              patch api_user_path(admin),
                   { user: { username: '' } },
                   authorization: token_header(admin)
+            end
           end
-
-          it { expect(response).to be_unprocessable }
         end
 
         context 'when supplying an invalid password' do
-          before do
-            patch api_user_path(admin),
+          it_behaves_like 'render_unprocessable' do
+            def action
+              patch api_user_path(admin),
                   { user: { password: nil } },
                   authorization: token_header(admin)
+            end
           end
-
-          it { expect(response).to be_unprocessable }
         end
       end
     end
@@ -192,14 +191,13 @@ describe 'Api::V1::Users' do
 
     context 'when authenticated' do
       context 'when the user does not exist' do
-        before do
-          delete api_user_path(id: User.maximum(:id).next),
+        it_behaves_like 'render_not_found' do
+          def action
+            delete api_user_path(id: User.maximum(:id).next),
                  nil,
                  authorization: token_header(admin)
+          end
         end
-
-        it { expect(response).to be_not_found }
-        it { expect(response).to match_response_schema 'not_found' }
       end
 
       context 'when the user exists' do
