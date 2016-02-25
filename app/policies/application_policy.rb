@@ -19,10 +19,10 @@ class ApplicationPolicy
   end
 
   def update?
-    user.admin? || (!user.guest? && user == record.user)
+    user.admin? || (!user.guest? && record.owned_by?(user))
   end
 
   def destroy?
-    user.admin? || (!user.guest? && user == record.user)
+    user.admin? || (!user.guest? && record.owned_by?(user))
   end
 end

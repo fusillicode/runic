@@ -1,13 +1,5 @@
 class PowerPolicy < ApplicationPolicy
   def create?
-    user.admin? || (!user.guest? && user == record.rune.user)
-  end
-
-  def update?
-    user.admin? || (!user.guest? && user == record.rune.user)
-  end
-
-  def destroy?
-    user.admin? || (!user.guest? && user == record.rune.user)
+    user.admin? || (!user.guest? && record.owned_by?(user))
   end
 end
