@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   root to: 'welcome#index'
 
   namespace :api, defaults: { format: 'json' } do
-    get '/', to: '/welcome#index', via: :all
+    get '/', to: '/welcome#index'
 
     scope module: :v1, constrains: ApiConstraints.new(version: 1) do
       resources :users, except: %i(new create edit) do
