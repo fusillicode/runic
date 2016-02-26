@@ -13,8 +13,7 @@ Rails.application.routes.draw do
       resources :runes, except: %i(new edit) do
         resources :powers, except: %i(new edit), shallow: true
       end
+      get '*unmatched_route', to: 'base#routing_error', via: :all
     end
-
-    get '*unmatched_route', to: 'base#routing_error', via: :all
   end
 end
