@@ -22,7 +22,6 @@ end
       Power.find_or_create_by name: Faker::Superhero.power,
                               description: Faker::Hipster.sentences.first
     end
-
     rune.save
   end
 end
