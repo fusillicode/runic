@@ -8,11 +8,11 @@ describe User do
 
     context 'on a new user' do
       it 'should not be valid without a password' do
-        expect(build :user, password: nil).not_to be_valid
+        expect(build(:user, password: nil)).not_to be_valid
       end
 
       it 'should not be valid with a short password' do
-        expect(build :user, password: 'short').not_to be_valid
+        expect(build(:user, password: 'short')).not_to be_valid
       end
     end
 

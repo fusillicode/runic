@@ -41,8 +41,8 @@ describe 'Api::V1::Runes' do
         it_behaves_like 'render not found' do
           def action
             get api_rune_path(id: Rune.maximum(:id).next),
-              nil,
-              authorization: token_header(admin)
+                nil,
+                authorization: token_header(admin)
           end
         end
       end
@@ -102,8 +102,8 @@ describe 'Api::V1::Runes' do
         it_behaves_like 'render unprocessable' do
           def action
             post api_runes_path,
-               { rune: { name: '' } },
-               authorization: token_header(admin)
+                 { rune: { name: '' } },
+                 authorization: token_header(admin)
           end
         end
       end
@@ -127,8 +127,8 @@ describe 'Api::V1::Runes' do
         it_behaves_like 'render not found' do
           def action
             patch api_rune_path(id: Rune.maximum(:id).next),
-                nil,
-                authorization: token_header(admin)
+                  nil,
+                  authorization: token_header(admin)
           end
         end
       end
@@ -169,8 +169,8 @@ describe 'Api::V1::Runes' do
             it_behaves_like 'render forbidden' do
               def action
                 patch api_rune_path(another_user_rune),
-                       { rune: { name: 'new-name' } },
-                       authorization: token_header(user)
+                      { rune: { name: 'new-name' } },
+                      authorization: token_header(user)
               end
             end
           end
@@ -192,8 +192,8 @@ describe 'Api::V1::Runes' do
 
             before do
               patch api_rune_path(another_user_rune),
-                       { rune: { name: 'new-name' } },
-                     authorization: token_header(admin)
+                    { rune: { name: 'new-name' } },
+                    authorization: token_header(admin)
             end
 
             it { expect(response).to be_ok }
@@ -204,8 +204,8 @@ describe 'Api::V1::Runes' do
           context 'when the rune does not belong to a user' do
             before do
               patch api_rune_path(existing_rune),
-                       { rune: { name: 'new-name' } },
-                     authorization: token_header(admin)
+                    { rune: { name: 'new-name' } },
+                    authorization: token_header(admin)
             end
 
             it { expect(response).to be_ok }
@@ -233,8 +233,8 @@ describe 'Api::V1::Runes' do
         it_behaves_like 'render not found' do
           def action
             delete api_rune_path(id: Rune.maximum(:id).next),
-                 nil,
-                 authorization: token_header(admin)
+                   nil,
+                   authorization: token_header(admin)
           end
         end
       end
@@ -253,7 +253,7 @@ describe 'Api::V1::Runes' do
 
           it { expect(response.status).to eq 204 }
           it { expect(response.message).to eq 'No Content' }
-          it { expect(Rune.find_by id: belonging_rune.id).to be_nil }
+          it { expect(Rune.find_by(id: belonging_rune.id)).to be_nil }
         end
 
         context 'when non admin' do
@@ -292,7 +292,7 @@ describe 'Api::V1::Runes' do
 
             it { expect(response.status).to eq 204 }
             it { expect(response.message).to eq 'No Content' }
-            it { expect(Rune.find_by id: another_user_rune.id).to be_nil }
+            it { expect(Rune.find_by(id: another_user_rune.id)).to be_nil }
           end
 
           context 'when the rune does not belong to a user' do
@@ -304,7 +304,7 @@ describe 'Api::V1::Runes' do
 
             it { expect(response.status).to eq 204 }
             it { expect(response.message).to eq 'No Content' }
-            it { expect(Rune.find_by id: existing_rune.id).to be_nil }
+            it { expect(Rune.find_by(id: existing_rune.id)).to be_nil }
           end
         end
       end

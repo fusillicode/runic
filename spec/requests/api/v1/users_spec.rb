@@ -121,8 +121,8 @@ describe 'Api::V1::Users' do
         it_behaves_like 'render not found' do
           def action
             patch api_user_path(id: User.maximum(:id).next),
-                nil,
-                authorization: token_header(admin)
+                  nil,
+                  authorization: token_header(admin)
           end
         end
       end
@@ -225,7 +225,7 @@ describe 'Api::V1::Users' do
 
           it { expect(response.status).to eq 204 }
           it { expect(response.message).to eq 'No Content' }
-          it { expect(User.find_by id: admin.id).to be_nil }
+          it { expect(User.find_by(id: admin.id)).to be_nil }
         end
       end
     end

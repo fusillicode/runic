@@ -18,7 +18,7 @@ end
                          description: Faker::Hipster.sentences.first,
                          # change to RAND() if you're on MySQL
                          user: User.order('RANDOM()').first).tap do |rune|
-    rune.powers << rand(1..3).times.map do
+    rune.powers << Array.new(rand(1..3)).map do
       Power.find_or_create_by name: Faker::Superhero.power,
                               description: Faker::Hipster.sentences.first
     end

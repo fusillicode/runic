@@ -51,8 +51,8 @@ describe 'Api::V1::Powers' do
         it_behaves_like 'render not found' do
           def action
             get api_power_path(id: Power.maximum(:id).next),
-              nil,
-              authorization: token_header(admin)
+                nil,
+                authorization: token_header(admin)
           end
         end
       end
@@ -80,7 +80,7 @@ describe 'Api::V1::Powers' do
     context 'when not authenticated' do
       it_behaves_like 'render unauthorized' do
         def action
-          post api_rune_powers_path(rune), { power: { name: 'new-name' } }
+          post api_rune_powers_path(rune), power: { name: 'new-name' }
         end
       end
     end
@@ -114,8 +114,8 @@ describe 'Api::V1::Powers' do
         it_behaves_like 'render unprocessable' do
           def action
             post api_rune_powers_path(rune),
-               { power: { name: '' } },
-               authorization: token_header(admin)
+                 { power: { name: '' } },
+                 authorization: token_header(admin)
           end
         end
       end
@@ -139,8 +139,8 @@ describe 'Api::V1::Powers' do
         it_behaves_like 'render not found' do
           def action
             patch api_power_path(id: Power.maximum(:id).next),
-                { power: { name: 'new-name' } },
-                authorization: token_header(admin)
+                  { power: { name: 'new-name' } },
+                  authorization: token_header(admin)
           end
         end
       end
@@ -167,8 +167,8 @@ describe 'Api::V1::Powers' do
             it_behaves_like 'render unprocessable' do
               def action
                 patch api_power_path(power_of_owned_rune),
-                    { power: { name: '' } },
-                    authorization: token_header(user)
+                      { power: { name: '' } },
+                      authorization: token_header(user)
               end
             end
           end
@@ -193,8 +193,8 @@ describe 'Api::V1::Powers' do
             it_behaves_like 'render forbidden' do
               def action
                 patch api_power_path(existing_power),
-                       { power: { name: 'new-name' } },
-                       authorization: token_header(user)
+                      { power: { name: 'new-name' } },
+                      authorization: token_header(user)
               end
             end
           end
@@ -208,8 +208,8 @@ describe 'Api::V1::Powers' do
 
             before do
               patch api_power_path(power_of_another_user_rune),
-                       { power: { name: 'new-name' } },
-                     authorization: token_header(admin)
+                    { power: { name: 'new-name' } },
+                    authorization: token_header(admin)
             end
 
             it { expect(response).to be_ok }
@@ -220,8 +220,8 @@ describe 'Api::V1::Powers' do
           context 'when the power rune does not belong to a user' do
             before do
               patch api_power_path(existing_power),
-                       { power: { name: 'new-name' } },
-                     authorization: token_header(admin)
+                    { power: { name: 'new-name' } },
+                    authorization: token_header(admin)
             end
 
             it { expect(response).to be_ok }
@@ -249,8 +249,8 @@ describe 'Api::V1::Powers' do
         it_behaves_like 'render not found' do
           def action
             delete api_power_path(id: Power.maximum(:id).next),
-                 nil,
-                 authorization: token_header(admin)
+                   nil,
+                   authorization: token_header(admin)
           end
         end
       end
@@ -263,13 +263,13 @@ describe 'Api::V1::Powers' do
 
           before do
             delete api_power_path(power_of_owned_rune),
-                  nil,
-                  authorization: token_header(user)
+                   nil,
+                   authorization: token_header(user)
           end
 
           it { expect(response.status).to eq 204 }
           it { expect(response.message).to eq 'No Content' }
-          it { expect(Power.find_by id: power_of_owned_rune.id).to be_nil }
+          it { expect(Power.find_by(id: power_of_owned_rune.id)).to be_nil }
         end
 
         context 'when non admin' do
@@ -281,8 +281,8 @@ describe 'Api::V1::Powers' do
             it_behaves_like 'render forbidden' do
               def action
                 delete api_power_path(power_of_another_user_rune),
-                      nil,
-                      authorization: token_header(user)
+                       nil,
+                       authorization: token_header(user)
               end
             end
           end
@@ -306,25 +306,25 @@ describe 'Api::V1::Powers' do
 
             before do
               delete api_power_path(power_of_another_user_rune),
-                       nil,
+                     nil,
                      authorization: token_header(admin)
             end
 
             it { expect(response.status).to eq 204 }
             it { expect(response.message).to eq 'No Content' }
-            it { expect(Power.find_by id: power_of_another_user_rune.id).to be_nil }
+            it { expect(Power.find_by(id: power_of_another_user_rune.id)).to be_nil }
           end
 
           context 'when the power rune does not belong to a user' do
             before do
               delete api_power_path(existing_power),
-                      nil,
+                     nil,
                      authorization: token_header(admin)
             end
 
             it { expect(response.status).to eq 204 }
             it { expect(response.message).to eq 'No Content' }
-            it { expect(Power.find_by id: existing_power.id).to be_nil }
+            it { expect(Power.find_by(id: existing_power.id)).to be_nil }
           end
         end
       end
